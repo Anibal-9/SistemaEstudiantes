@@ -46,8 +46,9 @@ while (!salir)
             break;
 
         case 4:
-            Console.WriteLine("Esta opcion se completara en la rama registro-consultas");
-            Pausar();
+            EliminarEstudiante(
+                matriculas, nombres, apellidos, edades,
+                sexos, fechasNacimiento, cursos);
             break;
 
         case 5:
@@ -136,6 +137,61 @@ static void VerEstudiantes(
             Console.WriteLine($"Fecha de nacimiento: {fechasNacimiento[i]:dd/MM/yyyy}");
             Console.WriteLine($"Curso: {cursos[i]}");
         }
+    }
+
+    Pausar();
+}
+
+static void EliminarEstudiante(
+    List<string> matriculas,
+    List<string> nombres,
+    List<string> apellidos,
+    List<int> edades,
+    List<char> sexos,
+    List<DateTime> fechasNacimiento,
+    List<string> cursos)
+{
+    Console.Clear();
+    Console.WriteLine("ELIMINAR ESTUDIANTE");
+    Console.WriteLine("Escriba VOLVER para regresar al menu principal");
+
+    string matricula = LeerTexto("Matricula del estudiante: ");
+
+    if (matricula.Equals("VOLVER", StringComparison.OrdinalIgnoreCase))
+    {
+        return;
+    }
+
+    int indice = matriculas.IndexOf(matricula);
+
+    if (indice == -1)
+    {
+        Console.WriteLine("No existe un estudiante con esa matricula");
+        Pausar();
+        return;
+    }
+
+    Console.WriteLine($"Estudiante: {nombres[indice]} {apellidos[indice]}");
+    Console.Write("Desea eliminar este estudiante (S/N): ");
+
+    string? respuesta = Console.ReadLine();
+
+    if (respuesta != null &&
+        respuesta.Trim().Equals("S", StringComparison.OrdinalIgnoreCase))
+    {
+        matriculas.RemoveAt(indice);
+        nombres.RemoveAt(indice);
+        apellidos.RemoveAt(indice);
+        edades.RemoveAt(indice);
+        sexos.RemoveAt(indice);
+        fechasNacimiento.RemoveAt(indice);
+        cursos.RemoveAt(indice);
+
+        Console.WriteLine("Estudiante eliminado correctamente");
+    }
+    else
+    {
+        Console.WriteLine("Se cancelo la eliminacion");
     }
 
     Pausar();
