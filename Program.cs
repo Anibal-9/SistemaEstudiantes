@@ -76,8 +76,16 @@ case 1:
 
 
         case 5:
-            Console.WriteLine("Esta opcion se completara en la rama reportes-estudiantes");
-            Pausar();
+            MostrarReportes(
+                matriculas,
+                nombres,
+                apellidos,
+                edades,
+                sexos,
+                cursos,
+                matriculasMaterias,
+                nombresMaterias,
+                notasMaterias);
             break;
 
         case 6:
@@ -463,6 +471,225 @@ static void ConsultarMateriasNotas(
 
     Pausar();
 }
+
+
+static void MostrarReportes(
+    List<string> matriculas,
+    List<string> nombres,
+    List<string> apellidos,
+    List<int> edades,
+    List<char> sexos,
+    List<string> cursos,
+    List<string> matriculasMaterias,
+    List<string> nombresMaterias,
+    List<List<double>> notasMaterias)
+{
+    bool volver = false;
+
+    while (!volver)
+    {
+        Console.Clear();
+        Console.WriteLine("MENU DE REPORTES");
+        Console.WriteLine("1. Reporte general de estudiantes");
+        Console.WriteLine("2. Reporte de estudiantes por curso");
+        Console.WriteLine("3. Reporte por sexo");
+        Console.WriteLine("4. Reporte de promedios academicos");
+        Console.WriteLine("0. Volver al menu principal");
+
+        int opcion = LeerEntero(
+            "Seleccione una opcion: ", 0, 4);
+
+        switch (opcion)
+        {
+
+            case 1:
+                Console.Clear();
+                Console.WriteLine("REPORTE GENERAL DEL SISTEMA");
+                Console.WriteLine();
+
+                int totalMasculinoGeneral = 0;
+                int totalFemeninoGeneral = 0;
+                List<string> cursosGenerales = new List<string>();
+
+                for (int i = 0; i < sexos.Count; i++)
+                {
+                    if (sexos[i] == 'M')
+                    {
+                        totalMasculinoGeneral++;
+                    }
+                    else if (sexos[i] == 'F')
+                    {
+                        totalFemeninoGeneral++;
+                    }
+
+                    if (!cursosGenerales.Contains(cursos[i]))
+                    {
+                        cursosGenerales.Add(cursos[i]);
+                    }
+                }
+
+                Console.WriteLine($"Total de estudiantes: {matriculas.Count}");
+                Console.WriteLine($"Estudiantes masculinos: {totalMasculinoGeneral}");
+                Console.WriteLine($"Estudiantes femeninos: {totalFemeninoGeneral}");
+                Console.WriteLine($"Total de cursos diferentes: {cursosGenerales.Count}");
+                Console.WriteLine($"Total de materias registradas: {nombresMaterias.Count}");
+
+                Pausar();
+                break;
+
+
+
+            case 2:
+                Console.Clear();
+                Console.WriteLine("REPORTE DE ESTUDIANTES POR CURSO");
+                Console.WriteLine();
+
+                if (matriculas.Count == 0)
+                {
+                    Console.WriteLine("No hay estudiantes registrados");
+                }
+                else
+                {
+                    List<string> cursosUnicos = new List<string>();
+
+                    for (int i = 0; i < cursos.Count; i++)
+                    {
+                        if (!cursosUnicos.Contains(cursos[i]))
+                        {
+                            cursosUnicos.Add(cursos[i]);
+                        }
+                    }
+
+                    foreach (string curso in cursosUnicos)
+                    {
+                        int cantidad = 0;
+
+                        Console.WriteLine("------------------------------");
+                        Console.WriteLine($"Curso: {curso}");
+
+                        for (int i = 0; i < cursos.Count; i++)
+                        {
+                            if (cursos[i] == curso)
+                            {
+                                cantidad++;
+                            }
+                        }
+
+                        Console.WriteLine($"Cantidad de estudiantes: {cantidad}");
+                        Console.WriteLine("Estudiantes:");
+
+                        for (int i = 0; i < cursos.Count; i++)
+                        {
+                            if (cursos[i] == curso)
+                            {
+                                Console.WriteLine(
+                                    $"{matriculas[i]} {nombres[i]} {apellidos[i]}");
+                            }
+                        }
+                    }
+                }
+
+                Pausar();
+                break;
+
+
+            case 3:
+                Console.WriteLine();
+                Console.WriteLine("Reporte de estudiantes por sexo");
+
+                int totalMasculino = 0;
+                int totalFemenino = 0;
+
+                for (int i = 0; i < sexos.Count; i++)
+                {
+                    if (sexos[i] == 'M')
+                    {
+                        totalMasculino++;
+                    }
+                    else if (sexos[i] == 'F')
+                    {
+                        totalFemenino++;
+                    }
+                }
+
+                Console.WriteLine(
+                    $"Estudiantes masculinos: {totalMasculino}");
+                Console.WriteLine(
+                    $"Estudiantes femeninos: {totalFemenino}");
+
+                Pausar();
+                break;
+
+
+            case 4:
+                Console.Clear();
+                Console.WriteLine("REPORTE DE PROMEDIOS ACADEMICOS");
+                Console.WriteLine();
+
+                if (matriculas.Count == 0)
+                {
+                    Console.WriteLine("No hay estudiantes registrados");
+                }
+                else
+                {
+                    for (int i = 0; i < matriculas.Count; i++)
+                    {
+                        Console.WriteLine("------------------------------");
+                        Console.WriteLine(
+                            $"Estudiante: {nombres[i]} {apellidos[i]}");
+                        Console.WriteLine($"Matricula: {matriculas[i]}");
+
+                        bool tieneMaterias = false;
+
+                        for (int j = 0; j < matriculasMaterias.Count; j++)
+                        {
+                            if (matriculasMaterias[j] == matriculas[i])
+                            {
+                                tieneMaterias = true;
+
+                                Console.WriteLine(
+                                    $"Materia: {nombresMaterias[j]}");
+
+                                if (notasMaterias[j].Count > 0)
+                                {
+                                    double promedio = notasMaterias[j].Average();
+
+                                    Console.WriteLine($"Promedio: {promedio:F2}");
+
+                                    if (promedio >= 70)
+                                    {
+                                        Console.WriteLine("Estado: Aprobado");
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("Estado: Reprobado");
+                                    }
+                                }
+                                else
+                                {
+                                    Console.WriteLine("No hay notas registradas");
+                                }
+                            }
+                        }
+
+                        if (!tieneMaterias)
+                        {
+                            Console.WriteLine("No tiene materias registradas");
+                        }
+                    }
+                }
+
+                Pausar();
+                break;
+
+
+            case 0:
+                volver = true;
+                break;
+        }
+    }
+}
+
 
 
 static string LeerTexto(string mensaje)
