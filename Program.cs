@@ -26,8 +26,9 @@ while (!salir)
     Console.WriteLine("4. Eliminar estudiante");
     Console.WriteLine("5. Mostrar reportes");
     Console.WriteLine("6. Salir");
+    Console.WriteLine("7. Mostrar estadisticas");
 
-    int opcionMenu = LeerEntero("Seleccione una opcion: ", 1, 6);
+    int opcionMenu = LeerEntero("Seleccione una opcion: ", 1, 7);
 
     switch (opcionMenu)
     {
@@ -91,6 +92,17 @@ case 1:
         case 6:
             salir = true;
             Console.WriteLine("Sistema finalizado");
+            break;
+
+        case 7:
+            MostrarEstadisticas(
+                matriculas,
+                nombres,
+                apellidos,
+                edades,
+                cursos,
+                matriculasMaterias,
+                notasMaterias);
             break;
     }
 }
@@ -773,4 +785,156 @@ static void Pausar()
     Console.WriteLine();
     Console.WriteLine("Presione una tecla para volver al menu principal");
     Console.ReadKey(true);
+}
+static void MostrarEstadisticas(
+    List<string> matriculas,
+    List<string> nombres,
+    List<string> apellidos,
+    List<int> edades,
+    List<string> cursos,
+    List<string> matriculasMaterias,
+    List<List<double>> notasMaterias)
+{
+    bool volver = false;
+
+    while (!volver)
+    {
+        Console.Clear();
+        Console.WriteLine("MENU DE ESTADISTICAS");
+        Console.WriteLine("1. Cantidad total de estudiantes");
+        Console.WriteLine("2. Edad promedio");
+        Console.WriteLine("3. Estudiante de mayor y menor edad");
+        Console.WriteLine("4. Curso con mas estudiantes");
+        Console.WriteLine("5. Promedio academico general");
+        Console.WriteLine("0. Volver al menu principal");
+
+        int opcion = LeerEntero("Seleccione una opcion: ", 0, 5);
+
+        switch (opcion)
+        {
+            case 1:
+                Console.WriteLine(
+                    $"Total de estudiantes: {matriculas.Count}");
+                Pausar();
+                break;
+
+            case 2:
+                if (edades.Count == 0)
+                {
+                    Console.WriteLine("No hay estudiantes registrados");
+                }
+                else
+                {
+                    double edadPromedio = edades.Average();
+                    Console.WriteLine($"Edad promedio: {edadPromedio:F2}");
+                }
+
+                Pausar();
+                break;
+
+            case 3:
+                if (edades.Count == 0)
+                {
+                    Console.WriteLine("No hay estudiantes registrados");
+                }
+                else
+                {
+                    int edadMayor = edades.Max();
+                    int edadMenor = edades.Min();
+
+                    Console.WriteLine("Estudiantes de mayor edad:");
+
+                    for (int i = 0; i < edades.Count; i++)
+                    {
+                        if (edades[i] == edadMayor)
+                        {
+                            Console.WriteLine(
+                                $"{nombres[i]} {apellidos[i]} - {edades[i]} años");
+                        }
+                    }
+
+                    Console.WriteLine("Estudiantes de menor edad:");
+
+                    for (int i = 0; i < edades.Count; i++)
+                    {
+                        if (edades[i] == edadMenor)
+                        {
+                            Console.WriteLine(
+                                $"{nombres[i]} {apellidos[i]} - {edades[i]} años");
+                        }
+                    }
+                }
+
+                Pausar();
+                break;
+
+            case 4:
+                if (cursos.Count == 0)
+                {
+                    Console.WriteLine("No hay estudiantes registrados");
+                }
+                else
+                {
+                    string cursoMayor = cursos[0];
+                    int cantidadMayor = 0;
+
+                    foreach (string curso in cursos)
+                    {
+                        int cantidad = 0;
+
+                        for (int i = 0; i < cursos.Count; i++)
+                        {
+                            if (cursos[i] == curso)
+                            {
+                                cantidad++;
+                            }
+                        }
+
+                        if (cantidad > cantidadMayor)
+                        {
+                            cantidadMayor = cantidad;
+                            cursoMayor = curso;
+                        }
+                    }
+
+                    Console.WriteLine($"Curso con mas estudiantes: {cursoMayor}");
+                    Console.WriteLine($"Cantidad de estudiantes: {cantidadMayor}");
+                }
+
+                Pausar();
+                break;
+
+            case 5:
+                double sumaPromedios = 0;
+                int materiasConNotas = 0;
+
+                for (int i = 0; i < notasMaterias.Count; i++)
+                {
+                    if (notasMaterias[i].Count > 0)
+                    {
+                        sumaPromedios += notasMaterias[i].Average();
+                        materiasConNotas++;
+                    }
+                }
+
+                if (materiasConNotas == 0)
+                {
+                    Console.WriteLine("No hay notas registradas");
+                }
+                else
+                {
+                    double promedioGeneral = sumaPromedios / materiasConNotas;
+
+                    Console.WriteLine(
+                        $"Promedio academico general: {promedioGeneral:F2}");
+                }
+
+                Pausar();
+                break;
+
+            case 0:
+                volver = true;
+                break;
+        }
+    }
 }
