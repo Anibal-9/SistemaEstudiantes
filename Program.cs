@@ -11,6 +11,9 @@ List<char> sexos = new List<char>();
 List<DateTime> fechasNacimiento = new List<DateTime>();
 List<string> cursos = new List<string>();
 
+List<string> matriculasMaterias = new List<string>();
+List<string> nombresMaterias = new List<string>();
+List<List<double>> notasMaterias = new List<List<double>>();
 bool salir = false;
 
 while (!salir)
@@ -28,11 +31,17 @@ while (!salir)
 
     switch (opcionMenu)
     {
-        case 1:
-            CrearEstudiante(
-                matriculas, nombres, apellidos, edades,
-                sexos, fechasNacimiento, cursos);
-            break;
+case 1:
+    CrearEstudiante(
+        matriculas,
+        nombres,
+        apellidos,
+        edades,
+        sexos,
+        fechasNacimiento,
+        cursos);
+    break;
+
 
         case 2:
             VerEstudiantes(
@@ -41,15 +50,30 @@ while (!salir)
             break;
 
         case 3:
-            Console.WriteLine("Esta opcion se completara en la rama materias-notas");
-            Pausar();
+            GestionarMateriasNotas(
+                matriculas,
+                nombres,
+                apellidos,
+                matriculasMaterias,
+                nombresMaterias,
+                notasMaterias);
             break;
+
 
         case 4:
             EliminarEstudiante(
-                matriculas, nombres, apellidos, edades,
-                sexos, fechasNacimiento, cursos);
+                matriculas,
+                nombres,
+                apellidos,
+                edades,
+                sexos,
+                fechasNacimiento,
+                cursos,
+                matriculasMaterias,
+                nombresMaterias,
+                notasMaterias);
             break;
+
 
         case 5:
             Console.WriteLine("Esta opcion se completara en la rama reportes-estudiantes");
@@ -142,6 +166,7 @@ static void VerEstudiantes(
     Pausar();
 }
 
+
 static void EliminarEstudiante(
     List<string> matriculas,
     List<string> nombres,
@@ -149,8 +174,12 @@ static void EliminarEstudiante(
     List<int> edades,
     List<char> sexos,
     List<DateTime> fechasNacimiento,
-    List<string> cursos)
+    List<string> cursos,
+    List<string> matriculasMaterias,
+    List<string> nombresMaterias,
+    List<List<double>> notasMaterias)
 {
+
     Console.Clear();
     Console.WriteLine("ELIMINAR ESTUDIANTE");
     Console.WriteLine("Escriba VOLVER para regresar al menu principal");
@@ -176,9 +205,20 @@ static void EliminarEstudiante(
 
     string? respuesta = Console.ReadLine();
 
+
     if (respuesta != null &&
         respuesta.Trim().Equals("S", StringComparison.OrdinalIgnoreCase))
     {
+        for (int i = matriculasMaterias.Count - 1; i >= 0; i--)
+        {
+            if (matriculasMaterias[i] == matricula)
+            {
+                matriculasMaterias.RemoveAt(i);
+                nombresMaterias.RemoveAt(i);
+                notasMaterias.RemoveAt(i);
+            }
+        }
+
         matriculas.RemoveAt(indice);
         nombres.RemoveAt(indice);
         apellidos.RemoveAt(indice);
@@ -187,8 +227,9 @@ static void EliminarEstudiante(
         fechasNacimiento.RemoveAt(indice);
         cursos.RemoveAt(indice);
 
-        Console.WriteLine("Estudiante eliminado correctamente");
+        Console.WriteLine("Estudiante y sus materias eliminados correctamente");
     }
+
     else
     {
         Console.WriteLine("Se cancelo la eliminacion");
@@ -196,6 +237,233 @@ static void EliminarEstudiante(
 
     Pausar();
 }
+
+
+static void GestionarMateriasNotas(
+    List<string> matriculas,
+    List<string> nombres,
+    List<string> apellidos,
+    List<string> matriculasMaterias,
+    List<string> nombresMaterias,
+    List<List<double>> notasMaterias)
+{
+    bool volver = false;
+
+    while (!volver)
+    {
+        Console.Clear();
+        Console.WriteLine("GESTION DE MATERIAS Y NOTAS");
+        Console.WriteLine("1. Registrar materia y notas");
+        Console.WriteLine("2. Consultar materias y notas");
+        Console.WriteLine("0. Volver al menu principal");
+
+        int opcion = LeerEntero("Seleccione una opcion: ", 0, 2);
+
+        switch (opcion)
+        {
+
+            case 1:
+                RegistrarMateriaNotas(
+                    matriculas,
+                    nombres,
+                    apellidos,
+                    matriculasMaterias,
+                    nombresMaterias,
+                    notasMaterias);
+                break;
+
+
+
+            case 2:
+                ConsultarMateriasNotas(
+                    matriculas,
+                    nombres,
+                    apellidos,
+                    matriculasMaterias,
+                    nombresMaterias,
+                    notasMaterias);
+                break;
+
+
+            case 0:
+                volver = true;
+                break;
+        }
+    }
+}
+
+
+
+static void RegistrarMateriaNotas(
+    List<string> matriculas,
+    List<string> nombres,
+    List<string> apellidos,
+    List<string> matriculasMaterias,
+    List<string> nombresMaterias,
+    List<List<double>> notasMaterias)
+{
+    Console.Clear();
+    Console.WriteLine("REGISTRAR MATERIA Y NOTAS");
+
+    if (matriculas.Count == 0)
+    {
+        Console.WriteLine("No hay estudiantes registrados");
+        Pausar();
+        return;
+    }
+
+    string matricula = LeerTexto(
+        "Matricula del estudiante o VOLVER para regresar: ");
+
+    if (matricula.Equals("VOLVER", StringComparison.OrdinalIgnoreCase))
+    {
+        return;
+    }
+
+    int indiceEstudiante = matriculas.IndexOf(matricula);
+
+    if (indiceEstudiante == -1)
+    {
+        Console.WriteLine("No existe un estudiante con esa matricula");
+        Pausar();
+        return;
+    }
+
+    Console.WriteLine(
+        $"Estudiante: {nombres[indiceEstudiante]} {apellidos[indiceEstudiante]}");
+
+    string nombreMateria = LeerTexto("Nombre de la materia: ");
+
+    List<double> notas = new List<double>();
+
+    int cantidadNotas = LeerEntero(
+        "Cuantas notas desea registrar: ", 1, 20);
+
+    for (int i = 0; i < cantidadNotas; i++)
+    {
+        double nota;
+
+        while (true)
+        {
+            Console.Write($"Digite la nota {i + 1} entre 0 y 100: ");
+            string? entrada = Console.ReadLine();
+
+            if (double.TryParse(
+                    entrada,
+                    NumberStyles.Float,
+                    CultureInfo.InvariantCulture,
+                    out nota) &&
+                nota >= 0 && nota <= 100)
+            {
+                break;
+            }
+
+            if (double.TryParse(
+                    entrada,
+                    NumberStyles.Float,
+                    CultureInfo.CurrentCulture,
+                    out nota) &&
+                nota >= 0 && nota <= 100)
+            {
+                break;
+            }
+
+            Console.WriteLine("La nota debe estar entre 0 y 100");
+        }
+
+        notas.Add(nota);
+    }
+
+    matriculasMaterias.Add(matricula);
+    nombresMaterias.Add(nombreMateria);
+    notasMaterias.Add(notas);
+
+    double promedio = notas.Average();
+
+    Console.WriteLine();
+    Console.WriteLine("Materia y notas registradas correctamente");
+    Console.WriteLine($"Materia: {nombreMateria}");
+    Console.WriteLine($"Cantidad de notas: {notas.Count}");
+    Console.WriteLine($"Promedio: {promedio:F2}");
+
+    Pausar();
+}
+
+static void ConsultarMateriasNotas(
+    List<string> matriculas,
+    List<string> nombres,
+    List<string> apellidos,
+    List<string> matriculasMaterias,
+    List<string> nombresMaterias,
+    List<List<double>> notasMaterias)
+{
+    Console.Clear();
+    Console.WriteLine("CONSULTAR MATERIAS Y NOTAS");
+
+    if (matriculasMaterias.Count == 0)
+    {
+        Console.WriteLine("No hay materias registradas");
+        Pausar();
+        return;
+    }
+
+    string matricula = LeerTexto(
+        "Matricula del estudiante o VOLVER para regresar: ");
+
+    if (matricula.Equals("VOLVER", StringComparison.OrdinalIgnoreCase))
+    {
+        return;
+    }
+
+    int indiceEstudiante = matriculas.IndexOf(matricula);
+
+    if (indiceEstudiante == -1)
+    {
+        Console.WriteLine("No existe un estudiante con esa matricula");
+        Pausar();
+        return;
+    }
+
+    Console.WriteLine();
+    Console.WriteLine(
+        $"Estudiante: {nombres[indiceEstudiante]} {apellidos[indiceEstudiante]}");
+    Console.WriteLine($"Matricula: {matricula}");
+
+    bool tieneMaterias = false;
+
+    for (int i = 0; i < matriculasMaterias.Count; i++)
+    {
+        if (matriculasMaterias[i] == matricula)
+        {
+            tieneMaterias = true;
+
+            Console.WriteLine();
+            Console.WriteLine($"Materia: {nombresMaterias[i]}");
+
+            if (notasMaterias[i].Count > 0)
+            {
+                Console.WriteLine(
+                    $"Notas: {string.Join(", ", notasMaterias[i])}");
+
+                double promedio = notasMaterias[i].Average();
+
+                Console.WriteLine($"Promedio: {promedio:F2}");
+            }
+            else
+            {
+                Console.WriteLine("Esta materia no tiene notas registradas");
+            }
+        }
+    }
+
+    if (!tieneMaterias)
+    {
+        Console.WriteLine("Este estudiante no tiene materias registradas");
+    }
+
+    Pausar();
+}
+
 
 static string LeerTexto(string mensaje)
 {
